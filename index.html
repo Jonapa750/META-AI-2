@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeHub - GitHub Clone</title>
+<style>
+  :root{
+    --bg:#0d1117; --card:#161b22; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#2f81f7; --green:#238636;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  body{background:var(--bg);color:var(--text)}
+
+  header{display:flex;align-items:center;gap:16px;padding:12px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0}
+ .logo{font-weight:700;font-size:20px;color:var(--accent)}
+ .search{flex:1;background:var(--bg);border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text)}
+ .btn{background:var(--green);border:none;padding:8px 14px;border-radius:6px;color:white;font-weight:600;cursor:pointer}
+ .btn:hover{filter:brightness(1.2)}
+
+ .container{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 58px)}
+ .sidebar{background:var(--card);border-right:1px solid var(--border);padding:16px;overflow:auto}
+ .repo-title{font-size:18px;font-weight:600;margin-bottom:12px}
+ .file{padding:6px 8px;border-radius:4px;cursor:pointer;font-size:14px}
+ .file:hover{background:#1f242c}
+
+ .main{display:flex;flex-direction:column}
+ .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--card)}
+ .tab{padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted)}
+ .tab.active{border-color:var(--accent);color:var(--text)}
+
+ .content{flex:1;padding:20px;overflow:auto}
+ .stats{display:flex;gap:16px;margin-bottom:20px}
+ .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;border-radius:8px;flex:1}
+ .stat-num{font-size:24px;font-weight:700;color:var(--accent)}
+
+ .graph{display:flex;gap:3px;align-items:end;height:100px;margin:16px 0}
+ .bar{width:10px;background:var(--accent);border-radius:2px;animation:rise.8s ease}
+  @keyframes rise{from{height:0}}
+
+ .code{background:#010409;border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Consolas',monospace;font-size:13px;line-height:1.6;overflow-x:auto}
+ .terminal{background:#000;border-top:1px solid var(--border);height:180px;padding:12px;font-family:monospace;color:#3fb950;overflow:auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">◉ CodeHub</div>
+  <input class="search" placeholder="Search repositories...">
+  <button class="btn" onclick="runDeploy()">Deploy</button>
+</header>
+
+<div class="container">
+  <div class="sidebar">
+    <div class="repo-title">awesome-ai-project</div>
+    <div id="files"></div>
+  </div>
+
+  <div class="main">
+    <div class="tabs">
+      <div class="tab active">Code</div>
+      <div class="tab">Issues</div>
+      <div class="tab">Pull Requests</div>
+      <div class="tab">Actions</div>
+    </div>
+
+    <div class="content">
+      <div class="stats">
+        <div class="stat-card"><div class="stat-num" id="commits">0</div><div>Commits</div></div>
+        <div class="stat-card"><div class="stat-num">42</div><div>Branches</div></div>
+        <div class="stat-card"><div class="stat-num">1.2k</div><div>Stars</div></div>
+      </div>
+
+      <h3>Commit Activity</h3>
+      <div class="graph" id="graph"></div>
+
+      <h3>README.md</h3>
+      <pre class="code" id="viewer"># CodeHub AI
+Die coolste Demo-Repo der Welt
+
+## Features
+- Live File Explorer
+- Animierter Commit Graph
+- 1-Klick Deploy Simulation
+- Integriertes Terminal
+
+Klick links auf eine Datei 👈</pre>
+    </div>
+
+    <div class="terminal" id="term">$ codehub@terminal:~$
+</div>
+  </div>
+</div>
+
+<script>
+const repoFiles = {
+  "src/app.js": "function App(){\n return <h1>Hello CodeHub</h1>\n}\nexport default App;",
+  "src/style.css": "body { background: #0d1117; color: #c9d1d9; }",
+  "package.json": '{\n "name": "awesome-ai-project",\n "version": "1.0.0",\n "scripts": {"dev": "vite"}\n}'
+};
+
+const filesDiv = document.getElementById('files');
+const viewer = document.getElementById('viewer');
+const term = document.getElementById('term');
+
+Object.keys(repoFiles).forEach(f=>{
+  const el = document.createElement('div');
+  el.className='file'; el.textContent=f;
+  el.onclick=()=>viewer.textContent=repoFiles[f];
+  filesDiv.appendChild(el);
+});
+
+// Animierter Graph
+const graph = document.getElementById('graph');
+for(let i=0;i<25;i++){
+  const bar = document.createElement('div');
+  bar.className='bar';
+  bar.style.height = Math.random()*90+10+'px';
+  graph.appendChild(bar);
+}
+
+// Zähler Animation
+let c=0; const counter=setInterval(()=>{
+  c++; document.getElementById('commits').textContent=c;
+  if(c>=347) clearInterval(counter);
+},5)
+
+function log(msg){ term.innerHTML += msg+'<br>'; term.scrollTop=term.scrollHeight; }
+function runDeploy(){
+  log('$ git push origin main');
+  setTimeout(()=>log('> Building...'),600);
+  setTimeout(()=>log('> Deploy successful to codehub.app'),1200);
+}
+</script>
+</body>
+</html>
